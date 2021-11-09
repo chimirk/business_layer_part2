@@ -1,16 +1,16 @@
 package com.pollmanager;
 
 public class Participant {
-    private String sessionID;
+    private String PIN;
     private Choice vote;
 
     public Participant(String sessionID, Choice vote) {
-        this.sessionID = sessionID;
+        this.PIN = sessionID;
         this.vote = new Choice(vote.getText(), vote.getDescription());
     }
 
-    public String getSessionID() {
-        return sessionID;
+    public String getPIN() {
+        return PIN;
     }
 
     public Choice getVote(){

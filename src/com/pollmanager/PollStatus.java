@@ -1,5 +1,5 @@
 package com.pollmanager;
 
 public enum PollStatus {
-    CREATED, RUNNING, RELEASED
+    CREATED, RUNNING, RELEASED, CLOSED
 }
