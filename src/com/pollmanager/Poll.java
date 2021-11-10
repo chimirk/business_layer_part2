@@ -7,15 +7,26 @@ public class Poll {
     String question;
     PollStatus status;
     ArrayList<Choice> choices;
+    String userID;
+    private String pollID;
 
     public Poll() {
         this.choices = new ArrayList<>();
     }
 
-    public Poll(String title, String question) {
+    public Poll(String title, String question, String userID) {
         this.title = title;
         this.question = question;
         this.choices = new ArrayList<>();
+        this.userID = userID;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
     public String getTitle() {

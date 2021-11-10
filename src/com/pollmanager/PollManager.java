@@ -10,13 +10,12 @@ public class PollManager {
     private Poll poll;
     private ArrayList<Participant> participants;
     private Timestamp pollReleasedTime;
-    private String pollID;
 
     public Poll getPoll() {
         return poll;
     }
 
-    public void createPoll(String title, String question, ArrayList<Choice> choices) throws PollManagerException, PollException {
+    public void createPoll(String title, String question, ArrayList<Choice> choices, string userId) throws PollManagerException, PollException {
 
         if (Objects.nonNull(this.poll)) {
             throw new PollManagerException("There is currently a poll in the system.");
@@ -33,13 +32,34 @@ public class PollManager {
             }
         }
 
-        this.poll = new Poll(title, question);
+        this.poll = new Poll(title, question, userId);
         this.poll.setChoices(choices);
         this.poll.setStatus(PollStatus.CREATED);
         this.participants = new ArrayList<>();
-
-
     }
+
+    public void deletePoll(String userId) {
+
+         if (Objects.isNull(this.poll)) {
+             throw new PollManagerException("There is no poll in the system.");
+         }
+
+         if (!userId.equals(this.poll.getUserId())){
+             throw new PollManagerException("A poll may be deleted only by the user who has created it.");
+         }
+
+         //if there is no participants, there shouldn't be any votes
+         if(!this.participants.isEmpty()){
+             throw new PollManagerException("This poll has been voted on!");
+         }
+
+         //delete poll
+         this.poll = null;
+         this.pollReleasedTime = null;
+
+        PollDAO pollDAO = new PollDAO();
+        //TODO shouldn't pollId by a String?
+     }
 
     public void updatePoll(String title, String question, ArrayList<Choice> choices) throws PollManagerException, PollException {
 
