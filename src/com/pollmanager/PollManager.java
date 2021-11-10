@@ -1,4 +1,7 @@
 package com.pollmanager;
+
+import com.database.PollDAO;
+
 import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -15,28 +18,27 @@ public class PollManager {
         return poll;
     }
 
-    public void createPoll(String title, String question, ArrayList<Choice> choices) throws PollManagerException, PollException {
+    public void createPoll(String title, String question, ArrayList<Choice> choices, String userID) throws PollManagerException, PollException {
+        Poll newPoll = new Poll();
 
-        if (Objects.nonNull(this.poll)) {
-            throw new PollManagerException("There is currently a poll in the system.");
-        }
-        if(title.trim().isEmpty()){
+        if (title.trim().isEmpty()) {
             throw new PollManagerException("Invalid Title! Please enter a proper title.");
         }
-        if(question.trim().isEmpty()){
+        if (question.trim().isEmpty()) {
             throw new PollManagerException("Invalid Question! Please enter a proper question.");
         }
+
         for (int i = 0; i < choices.size(); i++) {
-            if(choices.get(i).getText().trim().isEmpty() || choices.get(i).getDescription().trim().isEmpty()){
+            if (choices.get(i).getText().trim().isEmpty() || choices.get(i).getDescription().trim().isEmpty()) {
                 throw new PollManagerException("Invalid Choice! Please enter a proper choice with text and description.");
             }
         }
 
-        this.poll = new Poll(title, question);
-        this.poll.setChoices(choices);
-        this.poll.setStatus(PollStatus.CREATED);
-        this.participants = new ArrayList<>();
-
+        newPoll = new Poll(title, question);
+        newPoll.setChoices(choices);
+        newPoll.setStatus(PollStatus.CREATED);
+        PollDAO pollDAO = new PollDAO();
+        pollDAO.insertPoll(newPoll, userID);
 
     }
 
@@ -49,14 +51,14 @@ public class PollManager {
             throw new PollManagerException("The poll must be in created or running state.");
         }
 
-        if(title.trim().isEmpty()){
+        if (title.trim().isEmpty()) {
             throw new PollManagerException("Invalid Title! Please enter a proper title.");
         }
-        if(question.trim().isEmpty()){
+        if (question.trim().isEmpty()) {
             throw new PollManagerException("Invalid Question! Please enter a proper question.");
         }
         for (int i = 0; i < choices.size(); i++) {
-            if(choices.get(i).getText().trim().isEmpty() || choices.get(i).getDescription().trim().isEmpty()){
+            if (choices.get(i).getText().trim().isEmpty() || choices.get(i).getDescription().trim().isEmpty()) {
                 throw new PollManagerException("Invalid Choice! Please enter a proper choice with text and description.");
             }
         }
@@ -143,9 +145,9 @@ public class PollManager {
         } else {
             Participant participant1 = new Participant(participant, choice);
 
-            for(int i = 0; i < this.participants.size(); ++i) {
-                if (((Participant)this.participants.get(i)).getSessionID().compareTo(participant) == 0) {
-                    ((Participant)this.participants.get(i)).setVote(choice);
+            for (int i = 0; i < this.participants.size(); ++i) {
+                if (((Participant) this.participants.get(i)).getSessionID().compareTo(participant) == 0) {
+                    ((Participant) this.participants.get(i)).setVote(choice);
                     return;
                 }
             }
@@ -167,7 +169,7 @@ public class PollManager {
             this.participants.forEach((participant) -> {
                 Choice vote = participant.getVote();
                 Choice key = this.getRealKey(results, vote);
-                Integer value = (Integer)results.get(key);
+                Integer value = (Integer) results.get(key);
                 results.put(key, value + 1);
             });
             this.poll.setStatus(PollStatus.RELEASED);
@@ -180,7 +182,7 @@ public class PollManager {
         if (Objects.isNull(this.poll)) {
             throw new PollManagerException("There is no poll in the system.");
         }
-        if(this.poll.getStatus() != PollStatus.RELEASED){
+        if (this.poll.getStatus() != PollStatus.RELEASED) {
             throw new PollManagerException("The poll must be released to download poll details.");
         }
         //Edit filename
@@ -207,17 +209,17 @@ public class PollManager {
 
     }
 
-    private Choice getRealKey(Hashtable<Choice,Integer> hashtable, Choice someChoice) {
+    private Choice getRealKey(Hashtable<Choice, Integer> hashtable, Choice someChoice) {
         for (Map.Entry<Choice, Integer> entry : hashtable.entrySet()) {
             Choice choice = entry.getKey();
             Integer integer = entry.getValue();
             if ((choice.getText().compareTo(someChoice.getText()) == 0)
                     && (choice.getDescription().compareTo(someChoice.getDescription()) == 0)) {
                 return choice;
-            };
+            }
+            ;
         }
         return null;
     }
-
 
 }
