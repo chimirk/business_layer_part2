@@ -39,6 +39,33 @@ public class PollManager {
 
     }
 
+    public void deletePoll(String userId, String pollId) throws PollManagerException {
+        Poll p = accessPoll(pollId);
+
+        if (Objects.isNull(p)) {
+            throw new PollManagerException("There is no poll with this pollId.");
+        }
+
+        if (!userId.equals(p.getUserId())){
+            throw new PollManagerException("A poll may be deleted only by the user who has created it.");
+        }
+
+        //Check if Poll has been voted on using VoteDAO
+
+        //delete poll
+        this.poll = null;
+        this.pollReleasedTime = null;
+
+        PollDAO pollDAO = new PollDAO();
+        pollDAO.deletePoll(userID);
+    }
+
+    public Poll accessPoll(String pollId) throws PollManagerException {
+        PollDAO pollDAO = new PollDAO();
+        Poll p = pollDAO.selectPollById(pollId);
+        return p;
+    }
+    
     public void updatePoll(String title, String question, ArrayList<Choice> choices) throws PollManagerException, PollException {
 
         if (Objects.isNull(this.poll)) {
