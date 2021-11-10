@@ -84,24 +84,23 @@ public class PollManager {
 
     }
 
-    public void closePoll() throws PollManagerException {
-
-        if (Objects.isNull(this.poll)) {
+    public void closePoll(String pollID) throws PollManagerException {
+        PollDAO pollDAO = new PollDAO();
+        Poll poll = pollDAO.selectPollById(pollID);
+        if (Objects.isNull(poll)) {
             throw new PollManagerException("There is no poll in the system.");
         }
-        if (this.poll.getStatus() != PollStatus.RELEASED) {
+        if (poll.getStatus() != PollStatus.RELEASED) {
             throw new PollManagerException("The poll must be in a released state to be closed.");
         }
 
-        if (this.poll.getStatus() == PollStatus.RELEASED) {
+        if (poll.getStatus() == PollStatus.RELEASED) {
 
-            PollDAO pollDAO = new PollDAO();
+
             VoteDAO voteDAO = new VoteDAO();
-
-            pollDAO.insertPoll(this.poll);
-            voteDAO.insertVotes(this.participants);
-
             poll.setStatus(PollStatus.CLOSED);
+            pollDAO.updatePoll(poll,pollID);
+            voteDAO.insertVotes(this.participants);
 
         }
 
