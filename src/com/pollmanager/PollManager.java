@@ -1,13 +1,10 @@
 package com.pollmanager;
-
 import com.database.PollDAO;
+import com.database.VoteDAO;
 
 import java.io.PrintWriter;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class PollManager {
     private Poll poll;
@@ -96,9 +93,18 @@ public class PollManager {
             throw new PollManagerException("The poll must be in a released state to be closed.");
         }
 
-        this.poll = null;
-        this.participants = null;
-        pollReleasedTime = null;
+        if (this.poll.getStatus() == PollStatus.RELEASED) {
+
+            PollDAO pollDAO = new PollDAO();
+            VoteDAO voteDAO = new VoteDAO();
+
+            pollDAO.insertPoll(this.poll);
+            voteDAO.insertVotes(this.participants);
+
+            poll.setStatus(PollStatus.CLOSED);
+
+        }
+
     }
 
     public void runPoll() throws PollManagerException {
@@ -145,9 +151,9 @@ public class PollManager {
         } else {
             Participant participant1 = new Participant(participant, choice);
 
-            for (int i = 0; i < this.participants.size(); ++i) {
-                if (((Participant) this.participants.get(i)).getSessionID().compareTo(participant) == 0) {
-                    ((Participant) this.participants.get(i)).setVote(choice);
+            for(int i = 0; i < this.participants.size(); ++i) {
+                if (((Participant)this.participants.get(i)).getPIN().compareTo(participant) == 0) {
+                    ((Participant)this.participants.get(i)).setVote(choice);
                     return;
                 }
             }
@@ -169,7 +175,7 @@ public class PollManager {
             this.participants.forEach((participant) -> {
                 Choice vote = participant.getVote();
                 Choice key = this.getRealKey(results, vote);
-                Integer value = (Integer) results.get(key);
+                Integer value = (Integer)results.get(key);
                 results.put(key, value + 1);
             });
             this.poll.setStatus(PollStatus.RELEASED);
@@ -203,7 +209,7 @@ public class PollManager {
         });
         pollInfo.append("\n\nVotes \n\n");
         participants.forEach(participant -> {
-            pollInfo.append(participant.getSessionID()).append("\t ---> \t").append(participant.getVote().getText()).append("\n");
+            pollInfo.append(participant.getPIN()).append("\t ---> \t").append(participant.getVote().getText()).append("\n");
         });
         output.write(String.valueOf(pollInfo));
 
@@ -216,10 +222,10 @@ public class PollManager {
             if ((choice.getText().compareTo(someChoice.getText()) == 0)
                     && (choice.getDescription().compareTo(someChoice.getDescription()) == 0)) {
                 return choice;
-            }
-            ;
+            };
         }
         return null;
     }
+
 
 }
