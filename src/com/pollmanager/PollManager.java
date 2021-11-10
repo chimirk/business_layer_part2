@@ -15,7 +15,7 @@ public class PollManager {
         return poll;
     }
 
-    public void createPoll(String title, String question, ArrayList<Choice> choices, string userId) throws PollManagerException, PollException {
+    public void createPoll(String title, String question, ArrayList<Choice> choices, String userId) throws PollManagerException, PollException {
 
         if (Objects.nonNull(this.poll)) {
             throw new PollManagerException("There is currently a poll in the system.");
