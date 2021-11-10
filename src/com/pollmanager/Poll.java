@@ -7,6 +7,7 @@ public class Poll {
     String question;
     PollStatus status;
     ArrayList<Choice> choices;
+    String pollID;
 
     public Poll() {
         this.choices = new ArrayList<>();
@@ -16,6 +17,14 @@ public class Poll {
         this.title = title;
         this.question = question;
         this.choices = new ArrayList<>();
+    }
+
+    public String getPollID() {
+        return pollID;
+    }
+
+    public void setPollID(String pollID) {
+        this.pollID = pollID;
     }
 
     public String getTitle() {

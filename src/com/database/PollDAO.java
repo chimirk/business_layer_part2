@@ -32,6 +32,7 @@ public class PollDAO {
 
     public void insertPoll(Poll poll, String userID) {
         String pollID = PollID.genreateStringID();
+        poll.setPollID(pollID);
 
         try(Connection connection = dbConfig.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_POLL_SQL, Statement.RETURN_GENERATED_KEYS)) {
