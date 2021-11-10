@@ -48,6 +48,7 @@ public class VoteDAO {
                 return;
             }
             connection.commit();
+            connection.setAutoCommit(true);
             connection.close();
         } catch (Exception e) {
             e.printStackTrace();
