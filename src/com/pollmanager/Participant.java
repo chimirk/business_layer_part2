@@ -1,24 +1,24 @@
 package com.pollmanager;
 
 public class Participant {
-    private String PIN;
+    private int pin;
     private Choice vote;
 
-    public Participant(String sessionID, Choice vote) {
-        this.PIN = sessionID;
-        this.vote = new Choice(vote.getText(), vote.getDescription());
+    public Participant(int pin, Choice vote) {
+        this.pin = pin;
+        this.vote = new Choice(vote.getChoiceID(), vote.getText(), vote.getDescription());
     }
 
-    public String getPIN() {
-        return PIN;
+    public int getPIN() {
+        return pin;
     }
 
     public Choice getVote(){
-        return new Choice(this.vote.getText(), this.vote.getDescription());
+        return new Choice(this.vote.getChoiceID(), this.vote.getText(), this.vote.getDescription());
     }
 
     public void setVote(Choice vote){
-        this.vote = new Choice(vote.getText(), vote.getDescription());
+        this.vote = new Choice(vote.getChoiceID(), vote.getText(), vote.getDescription());
     }
 }
 

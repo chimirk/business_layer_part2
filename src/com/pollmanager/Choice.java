@@ -1,12 +1,26 @@
 package com.pollmanager;
 
 public class Choice {
+    private int choiceID;
     private String text;
     private String description;
 
     public Choice(String text, String description) {
         this.text = text;
         this.description = description;
+    }
+    public Choice(int choiceID, String text, String description) {
+        this.choiceID = choiceID;
+        this.text = text;
+        this.description = description;
+    }
+
+    public int getChoiceID() {
+        return choiceID;
+    }
+
+    public void setChoiceID(int choiceID) {
+        this.choiceID = choiceID;
     }
 
     public String getText() {
@@ -28,7 +42,7 @@ public class Choice {
     @Override
     public boolean equals(Object obj) {
         Choice compareChoice = (Choice) obj;
-        return this.text.equals(compareChoice.getText()) && this.description.equals(compareChoice.getDescription());
+        return this.choiceID == compareChoice.getChoiceID() &&this.text.equals(compareChoice.getText()) && this.description.equals(compareChoice.getDescription());
     }
 
 

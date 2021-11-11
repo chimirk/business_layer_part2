@@ -1,22 +1,30 @@
 package com.pollmanager;
-
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 public class Poll {
+    String pollID;
     String title;
     String question;
+    Timestamp createdAt;
+    Timestamp releasedAt;
     PollStatus status;
     ArrayList<Choice> choices;
     String userID;
-    private String pollID;
+
 
     public Poll() {
         this.choices = new ArrayList<>();
     }
 
-    public Poll(String title, String question, String userID) {
+
+    public Poll(String pollID, String title, String question, Timestamp createdAt, String userID) {
+        this.pollID = pollID;
         this.title = title;
         this.question = question;
+        this.createdAt = createdAt;
+        this.userID = userID;
         this.choices = new ArrayList<>();
         this.userID = userID;
     }
@@ -27,6 +35,14 @@ public class Poll {
 
     public void setUserID(String userID) {
         this.userID = userID;
+    }
+
+    public String getPollID() {
+        return pollID;
+    }
+
+    public void setPollID(String pollID) {
+        this.pollID = pollID;
     }
 
     public String getTitle() {
@@ -53,6 +69,26 @@ public class Poll {
         this.status = status;
     }
 
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public Timestamp getReleasedAt() {
+        return releasedAt;
+    }
+
+    public void setReleasedAt(Timestamp releasedAt) {
+        this.releasedAt = releasedAt;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
+
     public ArrayList<Choice> getChoices() {
         return choices;
     }
@@ -62,12 +98,12 @@ public class Poll {
             throw new PollException("The number of choices must be at least 2.");
         }
         this.choices = new ArrayList<>();
-        choices.forEach( choice -> this.choices.add(new Choice(choice.getText(), choice.getDescription())));
+        choices.forEach( choice -> this.choices.add(new Choice(choice.getChoiceID() ,choice.getText(), choice.getDescription())));
     }
 
-    public boolean isValidChoice(Choice userChoice){
+    public boolean isValidChoice(int choiceID){
         for(int i=0; i<this.choices.size(); i++){
-            if(this.choices.get(i).equals(userChoice)){
+            if(this.choices.get(i).getChoiceID()==choiceID){
                 return true;
             }
         }
