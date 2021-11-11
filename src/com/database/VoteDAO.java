@@ -13,54 +13,39 @@ import java.util.ArrayList;
 public class VoteDAO {
     private static final String INSERT_VOTE_SQL =
             "INSERT INTO votes" + "(pin, choice_id) VALUES" + " (?, ?);";
-    private static final String GET_CHOICE_ID =
-            "SELECT choice_id FROM choices WHERE text = ?;";
+    private static final String UPDATE_VOTE_SQL =
+            "UPDATE votes SET choice_id = ? WHERE pin = ? AND choice_id = ?;";
     private  static final String GET_ALL_VOTES_BY_POLLID =
             "SELECT * FROM votes JOIN choices ON votes.choice_id=choices.choice_id WHERE poll_id=?;";
     private  static final String DELETE_VOTES_BY_POLLID =
             "DELETE from votes WHERE pin = ? AND choice_id = ?;";
 
-    public void insertVotes(ArrayList<Participant> participants) {
-        ArrayList<Integer> choice_ids = new ArrayList();
-        try {
-            Connection connection = dbConfig.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(GET_CHOICE_ID);
-            for (Participant participant : participants) {
-                preparedStatement.setString(1, participant.getVote().getText());
-                ResultSet resultSet = preparedStatement.executeQuery();
-                if (resultSet.next()) {
-                    choice_ids.add(resultSet.getInt("choice_id"));
-                }
-            }
-            connection.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        try {
-            Connection connection = dbConfig.getConnection();
-            connection.setAutoCommit(false);
-            PreparedStatement preparedStatement = connection.prepareStatement(INSERT_VOTE_SQL);
+    public static void insertVotes(int pin, int choiceID) {
+        try (Connection connection = dbConfig.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(INSERT_VOTE_SQL)){
+            preparedStatement.setInt(1, pin);
+            preparedStatement.setInt(2, choiceID);
+            preparedStatement.executeUpdate();
 
-            for (int i = 0; i < choice_ids.size(); i++ ) {
-                preparedStatement.setInt(1, participants.get(i).getPIN());
-                preparedStatement.setInt(2, choice_ids.get(i));
-                preparedStatement.addBatch();
-            }
-            try {
-                preparedStatement.executeBatch();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
-            }
-            connection.commit();
-            connection.setAutoCommit(true);
-            connection.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     } //end method
+
+    public static void updateVote(Participant oldVote, int newChoice){
+        try (Connection connection = dbConfig.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_VOTE_SQL)){
+            preparedStatement.setInt(1, newChoice);
+            preparedStatement.setInt(2, oldVote.getPIN());
+            preparedStatement.setInt(3, oldVote.getVote().getChoiceID());
+            preparedStatement.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public static ArrayList<Participant> getAllVotesByPoll(String pollID) {
         ArrayList<Participant> participants = new ArrayList<>();
