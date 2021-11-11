@@ -15,7 +15,7 @@ public class PollManager {
         return poll;
     }
 
-    public void createPoll(String title, String question, ArrayList<Choice> choices, String userID) throws PollManagerException, PollException {
+    public void createPoll(String title, String question, ArrayList<Choice> choices, String creatorID) throws PollManagerException, PollException {
         Poll newPoll = new Poll();
 
         if (title.trim().isEmpty()) {
@@ -31,12 +31,11 @@ public class PollManager {
             }
         }
 
-        newPoll = new Poll(title, question);
+        newPoll = new Poll(title, question, creatorID);
         newPoll.setChoices(choices);
         newPoll.setStatus(PollStatus.CREATED);
         PollDAO pollDAO = new PollDAO();
-        pollDAO.insertPoll(newPoll, userID);
-
+        pollDAO.insertPoll(newPoll, creatorID);
     }
 
     public void deletePoll(String userId, String pollId) throws PollManagerException {
@@ -46,7 +45,7 @@ public class PollManager {
             throw new PollManagerException("There is no poll with this pollId.");
         }
 
-        if (!userId.equals(p.getUserId())){
+        if (!userId.equals(p.getCreatorID())){
             throw new PollManagerException("A poll may be deleted only by the user who has created it.");
         }
 
@@ -57,7 +56,7 @@ public class PollManager {
         this.pollReleasedTime = null;
 
         PollDAO pollDAO = new PollDAO();
-        pollDAO.deletePoll(userID);
+        pollDAO.deletePoll(pollId);
     }
 
     public Poll accessPoll(String pollId) throws PollManagerException {
