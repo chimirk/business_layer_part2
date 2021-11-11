@@ -18,6 +18,7 @@ public class Poll {
         this.choices = new ArrayList<>();
     }
 
+
     public Poll(String pollID, String title, String question, Timestamp createdAt, String userID) {
         this.pollID = pollID;
         this.title = title;
@@ -25,6 +26,15 @@ public class Poll {
         this.createdAt = createdAt;
         this.userID = userID;
         this.choices = new ArrayList<>();
+        this.userID = userID;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
     public String getPollID() {

@@ -10,6 +10,7 @@ import java.util.*;
 public class PollManager {
 
 
+
     public void createPoll(String title, String question, ArrayList<Choice> choices, String userID) throws PollManagerException, PollException {
         String pollID = PollID.generateStringID();
         Timestamp createdAt = new Timestamp(System.currentTimeMillis());
@@ -53,6 +54,7 @@ public class PollManager {
 
         PollDAO.deletePoll(poll.getPollID());
     }
+
 
     public Poll accessPoll(String pollID) throws PollManagerException {
 
