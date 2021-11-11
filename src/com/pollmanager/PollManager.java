@@ -36,7 +36,6 @@ public class PollManager {
         newPoll.setStatus(PollStatus.CREATED);
         PollDAO pollDAO = new PollDAO();
         pollDAO.insertPoll(newPoll, userID);
-
     }
 
     public void deletePoll(String userId, String pollId) throws PollManagerException {

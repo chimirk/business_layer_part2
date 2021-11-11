@@ -8,15 +8,21 @@ public class Poll {
     PollStatus status;
     ArrayList<Choice> choices;
     String pollID;
+    String creatorID;
 
     public Poll() {
         this.choices = new ArrayList<>();
     }
 
-    public Poll(String title, String question) {
+    public Poll(String title, String question, String creatorID) {
         this.title = title;
         this.question = question;
         this.choices = new ArrayList<>();
+        this.creatorID = creatorID;
+    }
+
+    public String getUserID() {
+        return userID;
     }
 
     public String getPollID() {
