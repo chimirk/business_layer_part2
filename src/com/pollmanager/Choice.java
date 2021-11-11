@@ -42,7 +42,7 @@ public class Choice {
     @Override
     public boolean equals(Object obj) {
         Choice compareChoice = (Choice) obj;
-        return this.text.equals(compareChoice.getText()) && this.description.equals(compareChoice.getDescription());
+        return this.choiceID == compareChoice.getChoiceID() &&this.text.equals(compareChoice.getText()) && this.description.equals(compareChoice.getDescription());
     }
 
 
