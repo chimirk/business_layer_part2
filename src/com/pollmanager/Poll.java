@@ -29,14 +29,6 @@ public class Poll {
         this.userID = userID;
     }
 
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
-
     public String getPollID() {
         return pollID;
     }

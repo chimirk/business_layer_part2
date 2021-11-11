@@ -10,7 +10,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class PollDAO {
+public class PollGateway {
     private static final String INSERT_POLL_SQL =
             "INSERT INTO poll" + "(poll_id, title, question, created_at, status, user_id) VALUES" + " (?, ?, ?,?, ?, ?);";
     private static final String INSERT_POLL_CHOICES_SQL =
