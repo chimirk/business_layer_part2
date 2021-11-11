@@ -56,7 +56,7 @@ public class PollManager {
         this.pollReleasedTime = null;
 
         PollDAO pollDAO = new PollDAO();
-        pollDAO.deletePoll(userID);
+        pollDAO.deletePoll(pollId);
     }
 
     public Poll accessPoll(String pollId) throws PollManagerException {
