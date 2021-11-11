@@ -5,6 +5,7 @@ import com.database.generateID.PollID;
 import com.pollmanager.Choice;
 import com.pollmanager.Poll;
 import com.pollmanager.PollException;
+import com.pollmanager.PollStatus;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -73,8 +74,11 @@ public class PollDAO {
                 while (resultSet.next()) {
                     poll = new Poll(
                             resultSet.getString("title"),
-                            resultSet.getString("question")
+                            resultSet.getString("question"),
+                            resultSet.getString("user_id")
                     );
+                    poll.setPollID(resultSet.getString("poll_id"));
+                    poll.setStatus(PollStatus.valueOf(resultSet.getString("status")));
                 }
             }
         } catch (SQLException e) {
@@ -112,8 +116,9 @@ public class PollDAO {
             while (resultSet.next()) {
                 polls.add(new Poll(
                         resultSet.getString("title"),
-                        resultSet.getString("question"))
-                );
+                        resultSet.getString("question"),
+                        resultSet.getString("user_id")
+                ));
             }
         } catch (Exception e) {
             e.printStackTrace();
