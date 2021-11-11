@@ -1,4 +1,4 @@
-package com.database.generateID;
+package com.generator;
 
 import java.security.SecureRandom;
 import java.util.Random;
