@@ -45,7 +45,7 @@ public class PollManager {
             throw new PollManagerException("There is no poll with this pollId.");
         }
 
-        if (!userId.equals(p.getUserId())){
+        if (!userId.equals(p.getCreatorID())){
             throw new PollManagerException("A poll may be deleted only by the user who has created it.");
         }
 
