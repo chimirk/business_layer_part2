@@ -6,7 +6,7 @@ import java.util.Random;
 public class PollID {
     private static final int LENGTHID = 10;
     private static final Random RANDOM = new SecureRandom();
-    private static final String ALPHABET = "ABCDEFGHJKMNPQRSTVWXYZ";
+    private static final String ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 
     public static String genreateStringID(){
         StringBuilder stringID = new StringBuilder(LENGTHID);
