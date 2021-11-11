@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class VoteDAO {
+public class VoteGateway {
     private static final String INSERT_VOTE_SQL =
             "INSERT INTO votes" + "(pin, choice_id) VALUES" + " (?, ?);";
     private static final String UPDATE_VOTE_SQL =

@@ -1,6 +1,6 @@
 package com.generator;
 
-import com.database.VoteDAO;
+import com.database.VoteGateway;
 import com.pollmanager.Participant;
 
 import java.security.SecureRandom;
@@ -27,7 +27,7 @@ public class VoterPin {
     }
 
     private static boolean isUnique(String pollID, int pinGenerated){
-        ArrayList<Participant> participants = VoteDAO.getAllVotesByPoll(pollID);
+        ArrayList<Participant> participants = VoteGateway.getAllVotesByPoll(pollID);
         for (Participant participant : participants) {
             if (participant.getPIN() == pinGenerated) {
                 return false;

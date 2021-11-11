@@ -1,8 +1,6 @@
 package com.generator;
 
-import com.database.PollDAO;
-import com.database.VoteDAO;
-import com.pollmanager.Participant;
+import com.database.PollGateway;
 import com.pollmanager.Poll;
 
 import java.security.SecureRandom;
@@ -27,7 +25,7 @@ public class PollID {
     }
 
     private static boolean isUnique(String pollIDGenerated){
-        ArrayList<Poll> polls = PollDAO.selectAllPolls();
+        ArrayList<Poll> polls = PollGateway.selectAllPolls();
         for (Poll poll : polls) {
             if (poll.getPollID() == pollIDGenerated) {
                 return false;
