@@ -88,12 +88,12 @@ public class Poll {
             throw new PollException("The number of choices must be at least 2.");
         }
         this.choices = new ArrayList<>();
-        choices.forEach( choice -> this.choices.add(new Choice(choice.getText(), choice.getDescription())));
+        choices.forEach( choice -> this.choices.add(new Choice(choice.getChoiceID() ,choice.getText(), choice.getDescription())));
     }
 
-    public boolean isValidChoice(Choice userChoice){
+    public boolean isValidChoice(int choiceID){
         for(int i=0; i<this.choices.size(); i++){
-            if(this.choices.get(i).equals(userChoice)){
+            if(this.choices.get(i).getChoiceID()==choiceID){
                 return true;
             }
         }
