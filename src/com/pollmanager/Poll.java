@@ -1,32 +1,30 @@
 package com.pollmanager;
-
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 public class Poll {
+    String pollID;
     String title;
     String question;
+    Timestamp createdAt;
+    Timestamp releasedAt;
     PollStatus status;
     ArrayList<Choice> choices;
-    String pollID;
-    String creatorID;
+    String userID;
+
 
     public Poll() {
         this.choices = new ArrayList<>();
     }
 
-    public Poll(String title, String question, String creatorID) {
+    public Poll(String pollID, String title, String question, Timestamp createdAt, String userID) {
+        this.pollID = pollID;
         this.title = title;
         this.question = question;
+        this.createdAt = createdAt;
+        this.userID = userID;
         this.choices = new ArrayList<>();
-        this.creatorID = creatorID;
-    }
-
-    public String getCreatorID() {
-        return creatorID;
-    }
-
-    public void setCreatorID(String creatorID) {
-        this.creatorID = creatorID;
     }
 
     public String getPollID() {
@@ -59,6 +57,26 @@ public class Poll {
 
     public void setStatus(PollStatus status) {
         this.status = status;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public Timestamp getReleasedAt() {
+        return releasedAt;
+    }
+
+    public void setReleasedAt(Timestamp releasedAt) {
+        this.releasedAt = releasedAt;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
     public ArrayList<Choice> getChoices() {

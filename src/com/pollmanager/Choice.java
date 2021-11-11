@@ -1,12 +1,26 @@
 package com.pollmanager;
 
 public class Choice {
+    private int choiceID;
     private String text;
     private String description;
 
     public Choice(String text, String description) {
         this.text = text;
         this.description = description;
+    }
+    public Choice(int choiceID, String text, String description) {
+        this.choiceID = choiceID;
+        this.text = text;
+        this.description = description;
+    }
+
+    public int getChoiceID() {
+        return choiceID;
+    }
+
+    public void setChoiceID(int choiceID) {
+        this.choiceID = choiceID;
     }
 
     public String getText() {
