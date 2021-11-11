@@ -1,22 +1,19 @@
 package com.pollmanager;
 import com.database.PollDAO;
 import com.database.VoteDAO;
+import com.generator.PollID;
 
 import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.*;
 
 public class PollManager {
-    private Poll poll;
-    private ArrayList<Participant> participants;
-    private Timestamp pollReleasedTime;
 
-    public Poll getPoll() {
-        return poll;
-    }
 
-    public void createPoll(String title, String question, ArrayList<Choice> choices, String creatorID) throws PollManagerException, PollException {
-        Poll newPoll = new Poll();
+    public void createPoll(String title, String question, ArrayList<Choice> choices, String userID) throws PollManagerException, PollException {
+        String pollID = PollID.generateStringID();
+        Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+        Poll poll = new Poll();
 
         if (title.trim().isEmpty()) {
             throw new PollManagerException("Invalid Title! Please enter a proper title.");
@@ -31,46 +28,47 @@ public class PollManager {
             }
         }
 
-        newPoll = new Poll(title, question, creatorID);
-        newPoll.setChoices(choices);
-        newPoll.setStatus(PollStatus.CREATED);
-        PollDAO pollDAO = new PollDAO();
-        pollDAO.insertPoll(newPoll, creatorID);
+        poll = new Poll(pollID, title, question, createdAt, userID);
+        poll.setChoices(choices);
+        poll.setStatus(PollStatus.CREATED);
+        PollDAO.insertPoll(poll);
+
     }
 
-    public void deletePoll(String userId, String pollId) throws PollManagerException {
-        Poll p = accessPoll(pollId);
+    public void deletePoll(String userId, String pollID) throws PollManagerException {
+        Poll poll = PollDAO.selectPollById(pollID);
 
-        if (Objects.isNull(p)) {
-            throw new PollManagerException("There is no poll with this pollId.");
+        if (Objects.isNull(poll)) {
+            throw new PollManagerException("There is no poll with this poll ID.");
         }
 
-        if (!userId.equals(p.getCreatorID())){
+        if (!userId.equals(poll.getUserID())){
             throw new PollManagerException("A poll may be deleted only by the user who has created it.");
         }
 
         //Check if Poll has been voted on using VoteDAO
-
-        //delete poll
-        this.poll = null;
-        this.pollReleasedTime = null;
-
-        PollDAO pollDAO = new PollDAO();
-        pollDAO.deletePoll(pollId);
-    }
-
-    public Poll accessPoll(String pollId) throws PollManagerException {
-        PollDAO pollDAO = new PollDAO();
-        Poll p = pollDAO.selectPollById(pollId);
-        return p;
-    }
-    
-    public void updatePoll(String title, String question, ArrayList<Choice> choices) throws PollManagerException, PollException {
-
-        if (Objects.isNull(this.poll)) {
-            throw new PollManagerException("There is no poll in the system.");
+        if(!VoteDAO.getAllVotesByPoll(pollID).isEmpty()){
+            throw new PollManagerException("A poll may be deleted only if it has not been voted on");
         }
-        if (this.poll.getStatus() == PollStatus.RELEASED) {
+
+        PollDAO.deletePoll(poll.getPollID());
+    }
+
+    public Poll accessPoll(String pollID) throws PollManagerException {
+
+        Poll poll = PollDAO.selectPollById(pollID);
+        return poll;
+    }
+
+    public void updatePoll(String title, String question, ArrayList<Choice> choices, String pollID, String userID) throws PollManagerException, PollException {
+        Poll poll = PollDAO.selectPollById(pollID);
+        if (Objects.isNull(poll)) {
+            throw new PollManagerException("The poll does not exist in our system.");
+        }
+        if (!userID.equals(poll.getUserID())){
+            throw new PollManagerException("A poll may be deleted only by the user who has created it.");
+        }
+        if (poll.getStatus() == PollStatus.RELEASED) {
             throw new PollManagerException("The poll must be in created or running state.");
         }
 
@@ -86,147 +84,145 @@ public class PollManager {
             }
         }
 
-        this.poll.setTitle(title);
-        this.poll.setQuestion(question);
-        this.poll.setChoices(choices);
-        this.poll.setStatus(PollStatus.CREATED);
-        this.participants = new ArrayList<>();
+        poll.setTitle(title);
+        poll.setQuestion(question);
+        poll.setChoices(choices);
+        poll.setStatus(PollStatus.CREATED);
+        PollDAO.updatePoll(poll);
 
     }
 
-    public void clearPoll() throws PollManagerException {
-
-        if (Objects.isNull(this.poll)) {
-            throw new PollManagerException("There is no poll in the system.");
+    public void clearPoll(String pollID) throws PollManagerException {
+        Poll poll = PollDAO.selectPollById(pollID);
+        if (Objects.isNull(poll)) {
+            throw new PollManagerException("The poll does not exist in our system.");
         }
-        if (this.poll.getStatus() == PollStatus.CREATED) {
+        if (poll.getStatus() == PollStatus.CREATED) {
             throw new PollManagerException("The poll must be in a running or released state.");
         }
-        this.participants = new ArrayList<>();
-        if (this.poll.getStatus() == PollStatus.RELEASED) {
-            this.poll.setStatus(PollStatus.CREATED);
-            this.pollReleasedTime = null;
+        VoteDAO.DeleteVotes(pollID);
+        if (poll.getStatus() == PollStatus.RELEASED) {
+            PollDAO.updatePollStatus(poll.getPollID(),PollStatus.CREATED);
         }
 
     }
 
     public void closePoll(String pollID) throws PollManagerException {
-        PollDAO pollDAO = new PollDAO();
-        Poll poll = pollDAO.selectPollById(pollID);
+        Poll poll = PollDAO.selectPollById(pollID);
         if (Objects.isNull(poll)) {
-            throw new PollManagerException("There is no poll in the system.");
+            throw new PollManagerException("The poll does not exist in our system.");
         }
         if (poll.getStatus() != PollStatus.RELEASED) {
             throw new PollManagerException("The poll must be in a released state to be closed.");
         }
 
         if (poll.getStatus() == PollStatus.RELEASED) {
-
-
-            VoteDAO voteDAO = new VoteDAO();
-            poll.setStatus(PollStatus.CLOSED);
-            pollDAO.updatePoll(poll,pollID);
-            voteDAO.insertVotes(this.participants);
-
+            PollDAO.updatePollStatus(poll.getPollID(), PollStatus.CLOSED);
         }
 
     }
 
-    public void runPoll() throws PollManagerException {
-        if (Objects.isNull(this.poll)) {
-            throw new PollManagerException("There is no poll in the system.");
+    public void runPoll(String pollID) throws PollManagerException {
+        Poll poll = PollDAO.selectPollById(pollID);
+        if (Objects.isNull(poll)) {
+            throw new PollManagerException("The poll does not exist in our system.");
         }
-        if (this.poll.getStatus() != PollStatus.CREATED) {
+        if (poll.getStatus() != PollStatus.CREATED) {
             throw new PollManagerException("The poll must be in created state.");
         }
 
-        this.poll.setStatus(PollStatus.RUNNING);
+        PollDAO.updatePollStatus(poll.getPollID(), PollStatus.RUNNING);
     }
 
-    public void releasePoll() throws PollManagerException {
-        if (Objects.isNull(this.poll)) {
-            throw new PollManagerException("There is no poll in the system.");
+    public void releasePoll(String pollID) throws PollManagerException {
+        Poll poll = PollDAO.selectPollById(pollID);
+        if (Objects.isNull(poll)) {
+            throw new PollManagerException("The poll does not exist in our system.");
         }
-        if (this.poll.getStatus() != PollStatus.RUNNING) {
+        if (poll.getStatus() != PollStatus.RUNNING) {
             throw new PollManagerException("The poll must be in a running state to be released.");
         }
-
-        this.poll.setStatus(PollStatus.RELEASED);
-        this.pollReleasedTime = new Timestamp(System.currentTimeMillis());
+        PollDAO.updatePollStatus(poll.getPollID(), PollStatus.RELEASED);
     }
 
-    public void unreleasePoll() throws PollManagerException {
-        if (Objects.isNull(this.poll)) {
-            throw new PollManagerException("There is no poll in the system.");
+    public void unreleasePoll(String pollID) throws PollManagerException {
+        Poll poll = PollDAO.selectPollById(pollID);
+        if (Objects.isNull(poll)) {
+            throw new PollManagerException("The poll does not exist in our system.");
         }
-        if (this.poll.getStatus() != PollStatus.RELEASED) {
+        if (poll.getStatus() != PollStatus.RELEASED) {
             throw new PollManagerException("The poll must be in a released state to be unreleased.");
         }
 
-        this.poll.setStatus(PollStatus.RUNNING);
-        this.pollReleasedTime = null;
+        PollDAO.updatePollStatus(poll.getPollID(), PollStatus.RUNNING);
     }
 
-    public void vote(String participant, Choice choice) throws PollManagerException {
-
-        if (this.poll.getStatus() != PollStatus.RUNNING) {
+    public void vote(String pollID, int pin, int choiceID) throws PollManagerException {
+        Poll poll = PollDAO.selectPollById(pollID);
+        if (Objects.isNull(poll)) {
+            throw new PollManagerException("The poll does not exist in our system.");
+        }
+        if (poll.getStatus() != PollStatus.RUNNING) {
             throw new PollManagerException("Failed to save vote since the poll is not in a running state.");
-        } else if (!this.poll.isValidChoice(choice)) {
+        } else if (!poll.isValidChoice(choiceID)) {
             throw new PollManagerException("This is not a valid choice.");
         } else {
-            Participant participant1 = new Participant(participant, choice);
-
-            for(int i = 0; i < this.participants.size(); ++i) {
-                if (((Participant)this.participants.get(i)).getPIN().compareTo(participant) == 0) {
-                    ((Participant)this.participants.get(i)).setVote(choice);
+            ArrayList<Participant> participants = VoteDAO.getAllVotesByPoll(poll.getPollID());
+            for(int i = 0; i < participants.size(); ++i) {
+                if (participants.get(i).getPIN()==pin) {
+                    VoteDAO.updateVote(participants.get(i), choiceID);
                     return;
                 }
             }
 
-            this.participants.add(participant1);
+            VoteDAO.insertVotes(pin, choiceID);
         }
     }
 
-    public Hashtable<Choice, Integer> getPollResults() throws PollManagerException {
-
-        if (this.poll.getStatus() != PollStatus.RELEASED) {
+    public Hashtable<Choice, Integer> getPollResults(String pollID) throws PollManagerException {
+        Poll poll = PollDAO.selectPollById(pollID);
+        if (Objects.isNull(poll)) {
+            throw new PollManagerException("The poll does not exist in our system.");
+        }
+        if (poll.getStatus() != PollStatus.RELEASED) {
             throw new PollManagerException("Failed to retrieve poll results since the poll is not in a release state.");
         } else {
-            ArrayList<Choice> availableChoices = this.poll.getChoices();
+            ArrayList<Participant> participants= VoteDAO.getAllVotesByPoll(poll.getPollID());
+            ArrayList<Choice> availableChoices = poll.getChoices();
             Hashtable<Choice, Integer> results = new Hashtable();
             availableChoices.forEach((choice) -> {
                 results.put(choice, 0);
             });
-            this.participants.forEach((participant) -> {
+            participants.forEach((participant) -> {
                 Choice vote = participant.getVote();
                 Choice key = this.getRealKey(results, vote);
                 Integer value = (Integer)results.get(key);
                 results.put(key, value + 1);
             });
-            this.poll.setStatus(PollStatus.RELEASED);
             return results;
         }
     }
 
-    public void downloadPollDetails(PrintWriter output, StringBuilder filename) throws PollManagerException {
-
-        if (Objects.isNull(this.poll)) {
-            throw new PollManagerException("There is no poll in the system.");
+    public void downloadPollDetails(PrintWriter output, StringBuilder filename, String pollID) throws PollManagerException {
+        Poll poll = PollDAO.selectPollById(pollID);
+        if (Objects.isNull(poll)) {
+            throw new PollManagerException("The poll does not exist in our system.");
         }
-        if (this.poll.getStatus() != PollStatus.RELEASED) {
+        if (poll.getStatus() != PollStatus.RELEASED) {
             throw new PollManagerException("The poll must be released to download poll details.");
         }
         //Edit filename
         String pollTitle = poll.getTitle();
 
-        filename.append(pollTitle).append("-").append(this.pollReleasedTime).append(".txt");
+        filename.append(pollTitle).append("-").append(poll.getReleasedAt()).append(".txt");
 
         //Edit .txt file info
         StringBuilder pollInfo = new StringBuilder();
-        pollInfo.append("Poll Title: ").append(this.poll.title).append("\n");
-        pollInfo.append("Poll Question: ").append(this.poll.question).append("\n");
+        pollInfo.append("Poll Title: ").append(poll.getTitle()).append("\n");
+        pollInfo.append("Poll Question: ").append(poll.getQuestion()).append("\n");
 
-        Hashtable<Choice, Integer> results = getPollResults();
+        Hashtable<Choice, Integer> results = getPollResults(poll.getPollID());
+        ArrayList<Participant> participants = VoteDAO.getAllVotesByPoll(poll.getPollID());
 
         pollInfo.append("\n\nNumber of Votes for Each Choice \n\n");
         results.forEach((s, integer) -> {
@@ -247,10 +243,8 @@ public class PollManager {
             if ((choice.getText().compareTo(someChoice.getText()) == 0)
                     && (choice.getDescription().compareTo(someChoice.getDescription()) == 0)) {
                 return choice;
-            };
+            }
         }
         return null;
     }
-
-
 }
