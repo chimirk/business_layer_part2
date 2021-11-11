@@ -25,6 +25,10 @@ public class Poll {
         return creatorID;
     }
 
+    public void setCreatorID(String creatorID) {
+        this.creatorID = creatorID;
+    }
+
     public String getPollID() {
         return pollID;
     }
