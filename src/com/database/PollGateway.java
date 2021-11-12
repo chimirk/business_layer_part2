@@ -131,6 +131,20 @@ public class PollGateway {
                 if(Objects.nonNull(resultSet.getString("released_at"))){
                     polls.get(polls.size()-1).setReleasedAt(Timestamp.valueOf(resultSet.getString("released_at")));
                 }
+                try (PreparedStatement preparedChoices = connection.prepareStatement(SELECT_CHOICES_BY_ID_SQL)){
+                    preparedChoices.setString(1,polls.get(polls.size()-1).getPollID());
+                    try(ResultSet choiceSet = preparedChoices.executeQuery()){
+                        ArrayList<Choice> choices = new ArrayList<>();
+                        while (choiceSet.next()) {
+                            choices.add(new Choice(
+                                    choiceSet.getInt("choice_id"),
+                                    choiceSet.getString("text"),
+                                    choiceSet.getString("description"))
+                            );
+                        }
+                        polls.get(polls.size()-1).setChoices(choices);
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

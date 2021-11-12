@@ -69,6 +69,16 @@ public class PollManager {
         return poll;
     }
 
+    public ArrayList<Poll> getAllPollsByUser(String userID){
+        ArrayList<Poll> userPolls = new ArrayList<>();
+        PollGateway.selectAllPolls().forEach(poll -> {
+            if(poll.getUserID().equals(userID)){
+                userPolls.add(poll);
+            }
+        });
+        return userPolls;
+    }
+
     public void updatePoll(String title, String question, ArrayList<Choice> choices, String pollID, String userID) throws PollManagerException, PollException {
         Poll poll = PollGateway.selectPollById(pollID);
         if (Objects.isNull(poll)) {
