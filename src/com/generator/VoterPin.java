@@ -20,19 +20,19 @@ public class VoterPin {
             stringID.append(DIGITS.charAt(RANDOM.nextInt(DIGITS.length())));
         }
         pinGenerated = Integer.parseInt(String.valueOf(stringID));
-        if(!isUnique(pollID,pinGenerated)){
+        if(pinExists(pollID,pinGenerated)){
             pinGenerated = generatePin(pollID);
         }
         return pinGenerated;
     }
 
-    private static boolean isUnique(String pollID, int pinGenerated){
+    public static boolean pinExists(String pollID, int pinGenerated){
         ArrayList<Participant> participants = VoteGateway.getAllVotesByPoll(pollID);
         for (Participant participant : participants) {
             if (participant.getPIN() == pinGenerated) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 }

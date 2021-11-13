@@ -17,20 +17,20 @@ public class PollID {
         for (int i = 0; i < LENGTHID; i++) {
             stringID.append(ALPHABET.charAt(RANDOM.nextInt(ALPHABET.length())));
         }
-        if(!isUnique(stringID.toString())){
+        if(idExists(stringID.toString())){
             stringID = new StringBuilder(LENGTHID);
             stringID.append(generateStringID());
         }
         return stringID.toString();
     }
 
-    private static boolean isUnique(String pollIDGenerated){
+    public static boolean idExists(String pollIDGenerated){
         ArrayList<Poll> polls = PollGateway.selectAllPolls();
         for (Poll poll : polls) {
-            if (poll.getPollID() == pollIDGenerated) {
-                return false;
+            if (poll.getPollID().equalsIgnoreCase(pollIDGenerated)) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 }
