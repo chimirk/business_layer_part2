@@ -242,7 +242,7 @@ public class PollManager {
         //Edit filename ------------------------------------------------------
         String pollTitle = poll.getTitle();
         filename.append(pollTitle).append("-").append(poll.getReleasedAt());
-        if (format.equals("text")) {
+        if (format.equals("txt")) {
             filename.append(".txt");
         } else if (format.equals("xml")) {
             filename.append(".xml");
@@ -268,9 +268,9 @@ public class PollManager {
         participants.forEach(participant -> {
             votes.put(participant.getPIN(), participant.getVote().getText());
         });
-        toWrite.setPinAndVote(votes);
+        toWrite.setPinAndChoice(votes);
 
-        if (format.equals("text")) {
+        if (format.equals("txt")) {
             StringBuilder pollInfo = new StringBuilder();
             pollInfo.append("Poll Title: ").append(toWrite.getTitle()).append("\n");
             pollInfo.append("Poll Question: ").append(toWrite.getQuestion()).append("\n");

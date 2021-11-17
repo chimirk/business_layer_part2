@@ -6,7 +6,6 @@ import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.util.Hashtable;
 
-
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PollResults {
@@ -17,8 +16,7 @@ public class PollResults {
     @jakarta.xml.bind.annotation.XmlElement
     Hashtable<String, Integer> choiceAndTotalVote;
     @jakarta.xml.bind.annotation.XmlElement
-    Hashtable<Integer, String> pinAndVote;
-
+    Hashtable<Integer, String> pinAndChoice;
 
     public String getTitle() {
         return title;
@@ -44,12 +42,12 @@ public class PollResults {
         this.choiceAndTotalVote = choiceAndTotalVote;
     }
 
-    public Hashtable<Integer, String> getPinAndVote() {
-        return pinAndVote;
+    public Hashtable<Integer, String> getPinAndChoice() {
+        return pinAndChoice;
     }
 
-    public void setPinAndVote(Hashtable<Integer, String> pinAndVote) {
-        this.pinAndVote = pinAndVote;
+    public void setPinAndChoice(Hashtable<Integer, String> pinAndChoice) {
+        this.pinAndChoice = pinAndChoice;
     }
 }
 
