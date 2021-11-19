@@ -1,14 +1,23 @@
 package com.pollmanager;
+
 import com.database.PollGateway;
 import com.database.VoteGateway;
+import com.download.PollResults;
 import com.generator.PollID;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 
 import java.io.PrintWriter;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Objects;
 
 public class PollManager {
-
 
     public void createPoll(String title, String question, ArrayList<Choice> choices, String userID) throws PollManagerException, PollException {
         String pollID = PollID.generateStringID();
@@ -220,7 +229,7 @@ public class PollManager {
         }
     }
 
-    public void downloadPollDetails(PrintWriter output, StringBuilder filename, String pollID) throws PollManagerException {
+    public void downloadPollDetails(PrintWriter output, StringBuilder filename, String pollID, String format) throws PollManagerException {
         Poll poll = PollGateway.selectPollById(pollID);
         if (Objects.isNull(poll)) {
             throw new PollManagerException("The poll does not exist in our system.");
@@ -228,28 +237,67 @@ public class PollManager {
         if (poll.getStatus() != PollStatus.RELEASED) {
             throw new PollManagerException("The poll must be released to download poll details.");
         }
-        //Edit filename
+        //Edit filename ------------------------------------------------------
         String pollTitle = poll.getTitle();
+        filename.append(pollTitle).append("-").append(poll.getReleasedAt());
+        if (format.equals("txt")) {
+            filename.append(".txt");
+        } else if (format.equals("xml")) {
+            filename.append(".xml");
+        } else if (format.equals("json")) {
+            filename.append(".json");
+        }
 
-        filename.append(pollTitle).append("-").append(poll.getReleasedAt()).append(".txt");
-
-        //Edit .txt file info
-        StringBuilder pollInfo = new StringBuilder();
-        pollInfo.append("Poll Title: ").append(poll.getTitle()).append("\n");
-        pollInfo.append("Poll Question: ").append(poll.getQuestion()).append("\n");
-
+        //Edit .txt file info -------------------------------------------------
         Hashtable<Choice, Integer> results = getPollResults(poll.getPollID());
         ArrayList<Participant> participants = VoteGateway.getAllVotesByPoll(poll.getPollID());
 
-        pollInfo.append("\n\nNumber of Votes for Each Choice \n\n");
+        PollResults toWrite = new PollResults();
+        toWrite.setTitle(poll.getTitle());
+        toWrite.setQuestion(poll.getQuestion());
+
+        Hashtable<String, Integer> totals = new Hashtable<>();
         results.forEach((s, integer) -> {
-            pollInfo.append(s.getText()).append("\t -").append(s.getDescription()).append("\t ----> \t").append(integer.toString()).append("\n");
+            totals.put(s.getText(), integer);
         });
-        pollInfo.append("\n\nVotes \n\n");
+        toWrite.setChoiceAndTotalVote(totals);;
+
+        Hashtable<Integer, String> votes = new Hashtable<>();
         participants.forEach(participant -> {
-            pollInfo.append(participant.getPIN()).append("\t ---> \t").append(participant.getVote().getText()).append("\n");
+            votes.put(participant.getPIN(), participant.getVote().getText());
         });
-        output.write(String.valueOf(pollInfo));
+        toWrite.setPinAndChoice(votes);
+
+        if (format.equals("txt")) {
+            StringBuilder pollInfo = new StringBuilder();
+            pollInfo.append("Poll Title: ").append(toWrite.getTitle()).append("\n");
+            pollInfo.append("Poll Question: ").append(toWrite.getQuestion()).append("\n");
+            pollInfo.append("\n\nNumber of Votes for Each Choice \n\n");
+            results.forEach((s, integer) -> {
+                pollInfo.append(s.getText()).append("\t -").append(s.getDescription()).append("\t ----> \t").append(integer.toString()).append("\n");
+            });
+            pollInfo.append("\n\nVotes \n\n");
+            participants.forEach(participant -> {
+                pollInfo.append(participant.getPIN()).append("\t ---> \t").append(participant.getVote().getText()).append("\n");
+            });
+            output.write(String.valueOf(pollInfo));
+        } else if (format.equals("xml")) {
+            JAXBContext jaxbContext = null;
+            try {
+                jaxbContext = org.eclipse.persistence.jaxb.JAXBContextFactory
+                        .createContext(new Class[]{PollResults.class}, null);
+                Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+                jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                jaxbMarshaller.marshal(toWrite, output);
+            } catch (JAXBException e) {
+                e.printStackTrace();
+            }
+        } else if (format.equals("json")) {
+            Gson g = new GsonBuilder().setPrettyPrinting().create();
+            g.toJson(toWrite, output);
+
+        }
+
 
     }
 
