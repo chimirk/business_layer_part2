@@ -61,10 +61,8 @@ public class PollManager {
             throw new PollManagerException("There is no poll with this poll ID.");
         }
 
-        if(poll.getStatus()==PollStatus.CLOSED || poll.getStatus() == PollStatus.CREATED){
-            if (Objects.isNull(poll)) {
-                throw new PollManagerException("Currently the poll is in created or closed sated");
-            }
+        if(poll.getStatus() == PollStatus.CLOSED || poll.getStatus() == PollStatus.CREATED){
+            throw new PollManagerException("Currently the poll is in created or closed sated");
         }
         return poll;
     }
