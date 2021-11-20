@@ -1,11 +1,11 @@
 package com.pollmanager;
 
-import clover.com.google.gson.Gson;
-import clover.com.google.gson.GsonBuilder;
 import com.database.PollGateway;
 import com.database.VoteGateway;
 import com.download.PollResults;
 import com.generator.PollID;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -306,23 +306,20 @@ public class PollManager {
             });
             output.write(String.valueOf(pollInfo));
         } else if (format.equals("xml")) {
+            //JAXBContext jaxbContext = null;
             JAXBContext jaxbContext = null;
             try {
-                jaxbContext = org.eclipse.persistence.jaxb.JAXBContextFactory
-                        .createContext(new Class[]{PollResults.class}, null);
-                Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-                jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-                jaxbMarshaller.marshal(toWrite, output);
+                jaxbContext = JAXBContext.newInstance(PollResults.class);
+                Marshaller marshaller = jaxbContext.createMarshaller();
+                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+                marshaller.marshal(toWrite, output);
             } catch (JAXBException e) {
                 e.printStackTrace();
             }
         } else if (format.equals("json")) {
             Gson g = new GsonBuilder().setPrettyPrinting().create();
             g.toJson(toWrite, output);
-
         }
-
-
     }
 
     private Choice getRealKey(Hashtable<Choice, Integer> hashtable, Choice someChoice) {

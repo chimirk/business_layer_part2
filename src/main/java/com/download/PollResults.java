@@ -8,13 +8,13 @@ import java.util.Hashtable;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PollResults {
-    @jakarta.xml.bind.annotation.XmlElement
+    @javax.xml.bind.annotation.XmlElement
      String title;
-    @jakarta.xml.bind.annotation.XmlElement
+    @javax.xml.bind.annotation.XmlElement
     String question;
-    @jakarta.xml.bind.annotation.XmlElement
+    @javax.xml.bind.annotation.XmlElement
     Hashtable<String, Integer> choiceAndTotalVote;
-    @jakarta.xml.bind.annotation.XmlElement
+    @javax.xml.bind.annotation.XmlElement
     Hashtable<Integer, String> pinAndChoice;
 
     public String getTitle() {
