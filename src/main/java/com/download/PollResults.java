@@ -1,16 +1,15 @@
 package com.download;
 
-import jakarta.xml.bind.annotation.XmlAccessType;
-import jakarta.xml.bind.annotation.XmlAccessorType;
-import jakarta.xml.bind.annotation.XmlRootElement;
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Hashtable;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class PollResults {
     @jakarta.xml.bind.annotation.XmlElement
-    String title;
+     String title;
     @jakarta.xml.bind.annotation.XmlElement
     String question;
     @jakarta.xml.bind.annotation.XmlElement

@@ -1,5 +1,4 @@
 package com.pollmanager;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
