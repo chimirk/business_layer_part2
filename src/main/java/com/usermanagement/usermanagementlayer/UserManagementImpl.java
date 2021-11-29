@@ -1,5 +1,7 @@
 package com.usermanagement.usermanagementlayer;
 
+import com.database.UserGateway;
+import com.database.VerificationTokensGateway;
 import com.usermanagement.gateways.emailgateway.emailGateway;
 import com.usermanagement.useradmin.UserManagement;
 
@@ -12,10 +14,10 @@ public class UserManagementImpl implements UserManagement {
         UUID token = UUID.randomUUID();
 
         //save the token to the sql database
-        //VerificationTokensGateway.saveToken(token, username);
+        VerificationTokensGateway.saveToken(token, username);
 
         //save user info
-        //UserGateway.saveUser(username, email, fullName);
+        UserGateway.saveUser(username, email, fullName);
 
         //send verification email to user
         try {
