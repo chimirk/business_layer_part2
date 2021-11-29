@@ -11,12 +11,13 @@ public class UserAdministration {
         userManagement.signUp(username, fullName, email);
     }
 
-    public void forgotPasswordUser() {
-        userManagement.forgotPassword();
+    public void forgotPasswordUser(String username, String email) {
+
+        userManagement.forgotPassword(username, email);
     }
 
-    public void emailVerificationUser() {
-        userManagement.emailVerification();
+    public void emailVerificationUser(String username, String password) {
+        userManagement.emailVerification(username, password);
     }
     public void changePasswordUser() {
         userManagement.changePassword();
