@@ -1,6 +1,7 @@
+/*
 package com.main;
 
-import com.usermanagement.useradmin.UserAdministration;
+import com.useradm.UserAdministration;
 import com.usermanagement.usermanagementlayer.UserManagementImpl;
 
 public class Main {
@@ -9,3 +10,4 @@ public class Main {
         userAdministration.signUpUser("mike", "mike lopez", "chirca.mircea@gmail.com" );
     }
 }
+*/
