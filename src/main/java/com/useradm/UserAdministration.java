@@ -1,5 +1,6 @@
 package com.useradm;
 
+import com.usermanagementlayer.UserManagementException;
 import com.usermanagementlayerinterface.UserManagement;
 
 public class UserAdministration {
@@ -19,11 +20,11 @@ public class UserAdministration {
         userManagement.forgotPassword(username);
     }
 
-    public void emailTheVerificationForSignUp(String username, String password) {
+    public void emailVerificationForSignUp(String username, String password) throws UserManagementException {
         userManagement.emailVerification(username, password, true);
     }
 
-    public void emailTheVerificationForForgotPassword(String username, String password) {
+    public void emailVerificationForForgotPassword(String username, String password) throws UserManagementException {
         userManagement.emailVerification(username, password, false);
     }
     public void changePassword(String username, String oldPassword, String newPassword) throws Exception {
