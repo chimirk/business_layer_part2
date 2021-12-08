@@ -1,12 +1,11 @@
 package com.useradm;
 
-import com.databaseUM.helper.User;
+import com.databaseEG.helper.User;
 import com.usermanagementlayer.UserManagementException;
 import com.usermanagementlayerinterface.UserManagement;
 
 public class UserAdministration {
     private UserManagement userManagement;
-    //private UserManagement userManagement;
 
     public UserAdministration(UserManagement userManagement) {
         this.userManagement = userManagement;

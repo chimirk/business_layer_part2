@@ -1,4 +1,3 @@
-/*
 package com.main;
 
 import com.useradm.UserAdministration;
@@ -13,4 +12,3 @@ public class Main {
             e.printStackTrace();
         }    }
 }
-*/
