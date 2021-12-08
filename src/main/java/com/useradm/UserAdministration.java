@@ -1,5 +1,6 @@
 package com.useradm;
 
+import com.databaseUM.helper.User;
 import com.usermanagementlayer.UserManagementException;
 import com.usermanagementlayerinterface.UserManagement;
 
@@ -29,5 +30,8 @@ public class UserAdministration {
     }
     public void changePassword(String username, String oldPassword, String newPassword) throws Exception {
         userManagement.changePassword(username, oldPassword, newPassword);
+    }
+    public User userLogin(String username, String password) {
+        return userManagement.userLogin(username, password);
     }
 }
