@@ -4,6 +4,8 @@ import com.databaseEG.helper.User;
 import com.usermanagementlayer.UserManagementException;
 import com.usermanagementlayerinterface.UserManagement;
 
+import java.security.NoSuchAlgorithmException;
+
 public class UserAdministration {
     private UserManagement userManagement;
 
@@ -20,11 +22,11 @@ public class UserAdministration {
         userManagement.forgotPassword(username);
     }
 
-    public void emailVerificationForSignUp(String username, String password) throws UserManagementException {
+    public void emailVerificationForSignUp(String username, String password) throws UserManagementException, NoSuchAlgorithmException {
         userManagement.emailVerification(username, password, true);
     }
 
-    public void emailVerificationForForgotPassword(String username, String password) throws UserManagementException {
+    public void emailVerificationForForgotPassword(String username, String password) throws UserManagementException, NoSuchAlgorithmException {
         userManagement.emailVerification(username, password, false);
     }
     public void changePassword(String username, String oldPassword, String newPassword) throws Exception {
